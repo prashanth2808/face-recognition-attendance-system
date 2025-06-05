@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.tab-content {
+    display: block;
+}
+
+.tab-content.d-none {
+    display: none;
+}
+
+.nav-tabs .nav-link {
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #f4f5f700;
+    color: white;
+    border-color: #007bff;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}

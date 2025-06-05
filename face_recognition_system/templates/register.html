@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Register Student</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <video id="video" autoplay class="w-100 rounded-lg" style="border: 2px solid #ddd;"></video>
+            <canvas id="canvas" class="d-none"></canvas>
+        </div>
+        <div class="col-md-6">
+            <form id="registerForm" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Enter Student Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Enter Student Name" required>
+                    <div class="invalid-feedback">Please enter a name.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="class" class="form-label">Enter Class</label>
+                    <input type="text" id="class" name="class" class="form-control" placeholder="Enter Class" required>
+                    <div class="invalid-feedback">Please enter a class.</div>
+                </div>
+                <div class="text-center">
+                    <button type="button" id="captureButton" class="btn btn-primary">Capture and Register Face</button>
+                </div>
+            </form>
+            <p id="message" class="mt-3 text-center"></p>
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureButton = document.getElementById('captureButton');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            video.play().catch(err => console.error('Error playing video:', err));
+        })
+        .catch(err => {
+            console.error('Error accessing webcam:', err);
+            document.getElementById('message').textContent = 'Failed to access webcam. Please check permissions or ensure a camera is connected.';
+        });
+
+    captureButton.addEventListener('click', async () => {
+        if (!document.getElementById('name').value || !document.getElementById('class').value) {
+            document.getElementById('message').textContent = 'Please fill in all fields.';
+            return;
+        }
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+
+        const formData = new FormData();
+        formData.append('name', document.getElementById('name').value);
+        formData.append('class', document.getElementById('class').value);
+        formData.append('image', canvas.toDataURL('image/jpeg'));
+
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            document.getElementById('message').textContent = result.message || result.error;
+            if (result.message) {
+                document.getElementById('name').value = '';
+                document.getElementById('class').value = '';
+            }
+        } catch (error) {
+            document.getElementById('message').textContent = 'Error registering student';
+        }
+    });
+</script>
+{% endblock %}
