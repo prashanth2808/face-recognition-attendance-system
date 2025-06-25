@@ -1,0 +1,3 @@
+- Built with Python 3.12+, Flask, OpenCV & [face_recognition].  
+- Register students (name, class), start/stop live camera feed in UI.  
+- Stores attendance logs to CSV/DB.  
