@@ -1,4 +1,5 @@
 Face Recognition Attendance System
+
 A web-based attendance system that uses real-time face recognition to register and track student attendance via a live camera feed.
 
 Features:
